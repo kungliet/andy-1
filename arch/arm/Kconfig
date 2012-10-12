@@ -45,6 +45,11 @@ config MACHINE_VERSATILE
 	select CPU_ARM926T
 	select RAM_START_ZERO
 
+config MACHINE_REALVIEW
+	bool
+	select CPU_ARM926T
+	select RAM_START_ZERO
+
 choice
 	prompt "Select target platform"
 
@@ -53,6 +58,8 @@ source "arch/arm/arch-imx21/Kconfig"
 source "arch/arm/arch-goldfish/Kconfig"
 
 source "arch/arm/arch-versatile/Kconfig"
+
+source "arch/arm/arch-realview/Kconfig"
 endchoice
 
 endmenu

@@ -1,0 +1,30 @@
+            XenARM for ARM RealviewEB Board
+
+DEC/09/2008					  Donghyuk Lee <dh5050.lee@samsung.com>
+Change :
+- supports lower 64MB of RAM on board (0x00000000-0x04000000)
+
+Location of binaries (Physical Address)
+- Xen			0x00008000
+- Mini-OS 1		0x01c00000
+- Mini-OS 2		0x02c00000
+
+Nov/14/2008                   Minsung Jang <minsung@gatech.edu>
+
+Introduction:
+XenARM for ARM RealviewEB Board assumes it executes on top of u-boot, and 
+have been developed and tested on QEMU environment. Since current QEMU is not 
+properly emulating the flash memory of VersatilePB, you must apply patches 
+into QEMU and u-boot. 
+Please, refer http://thomas.enix.org/Blog-20081002153859-Technologie
+
+Limitation:
+- Only supports upper 64MB of RAM on board (0x04000000-0x08000000) 
+  in order to avoid the conflict with domain creation codes in XenARM.
+  I expect the conflict will be resolved by XenARM maintainers in near future.
+- Impossible to use Secondary Interrupt Controller(SIC) 
+
+Location of binaries (Physical Address)
+- Xen			0x04008000
+- Mini-OS 1		0x05c00000
+- Mini-OS 2		0x06c00000

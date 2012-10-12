@@ -1,0 +1,5 @@
+config PLATFORM_REALVIEWEB
+	bool "ARM realview_eb"
+	select MACHINE_REALVIEW
+	help
+		Say Y here if you are using the ARM realview EB 

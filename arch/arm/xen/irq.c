@@ -471,9 +471,16 @@ void level_irq_handler(unsigned int irq, struct irqdesc *desc, struct cpu_user_r
 		handle_guest_bound_irq(irq);
 		goto out_unlock;
 	}
-
+	
+	desc->status |= IRQ_IN_PROGRESS;  // andy
+	
+#if 0  //andy
 	if (unlikely(desc->status & IRQ_IN_PROGRESS))
 		goto out_unlock;
+#else
+	if (0 == (desc->status & IRQ_IN_PROGRESS))
+		goto out_unlock;
+#endif
 
 	desc->status &= ~(IRQ_REPLAY | IRQ_WAITING);
 
@@ -483,7 +490,7 @@ void level_irq_handler(unsigned int irq, struct irqdesc *desc, struct cpu_user_r
 		goto out_unlock;
 	}
 
-	desc->status |= IRQ_IN_PROGRESS;
+	// desc->status |= IRQ_IN_PROGRESS;
 	desc->status &= ~IRQ_PENDING;
 
 	spin_unlock(&desc->lock);

@@ -72,7 +72,7 @@ __und_svc:
 	.align	5
 __irq_svc:
 	save_svc_context
-#ifdef	CONFIG_MACHINE_VERSATILE
+#if	defined(CONFIG_MACHINE_VERSATILE) || defined(CONFIG_MACHINE_REALVIEW)
         get_irqnr_preamble r5, lr @ minsung
 #endif
 1:	get_irqnr_and_base r0, r6, r5, lr
@@ -229,7 +229,7 @@ __irq_usr:
 	orr     r3, r3, r1
 	str     r3, [sp, #S_PSR]
 
-#ifdef	CONFIG_MACHINE_VERSATILE
+#if	defined(CONFIG_MACHINE_VERSATILE) || defined(CONFIG_MACHINE_REALVIEW)
 	get_irqnr_preamble r5, lr @ minsung
 #endif
 1:	get_irqnr_and_base r0, r6, r5, lr

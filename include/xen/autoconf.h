@@ -1,7 +1,7 @@
 /*
  * DO NOT MODIFY.
  *
- * This file was auto-generated from /home/lee/imx21_2.6.21.1/xen-unstable.hg/xen/../.config
+ * This file was auto-generated from /home/andy/EmbeddedXen/xen-arm/xen-unstable.hg/xen/../.config
  *
  */
 
@@ -14,8 +14,8 @@
 #define CONFIG_CPU_COPYPAGE_V4WB 
 #define CONFIG_RAM_START_ZERO 
 #define CONFIG_CPU_ARM926T 
-#define CONFIG_MACHINE_VERSATILE 
-#define CONFIG_PLATFORM_VERSATILEPB 
+#define CONFIG_MACHINE_REALVIEW 
+#define CONFIG_PLATFORM_REALVIEWEB 
 #define CONFIG_HYPERVISOR_BASE 0xFF000000
 #define CONFIG_MEMMAP_GUEST_0_SIZE 0x02000000
 #define CONFIG_MEMMAP_GUEST_1_SIZE 0x01000000

@@ -19,6 +19,7 @@ endif
 machine-$(CONFIG_MACHINE_IMX21)       := imx21
 machine-$(CONFIG_MACHINE_GOLDFISH)    := goldfish
 machine-$(CONFIG_MACHINE_VERSATILE)       := versatile
+machine-$(CONFIG_MACHINE_REALVIEW)       := realview
 
 TARGET_MACHINE := $(machine-y)
 

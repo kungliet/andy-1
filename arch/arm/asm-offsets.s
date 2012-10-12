@@ -182,8 +182,8 @@ main:
 	.4byte	.LFE109-.LFB109
 	.align	2
 .LEFDE0:
-	.file 2 "/home/lee/imx21_2.6.21.1/xen-unstable.hg/xen/include/asm/flushtlb.h"
-	.file 3 "/home/lee/imx21_2.6.21.1/xen-unstable.hg/xen/include/asm/types.h"
+	.file 2 "/home/andy/EmbeddedXen/xen-arm/xen-unstable.hg/xen/include/asm/flushtlb.h"
+	.file 3 "/home/andy/EmbeddedXen/xen-arm/xen-unstable.hg/xen/include/asm/types.h"
 	.text
 .Letext0:
 	.section	.debug_info
@@ -400,9 +400,6 @@ main:
 	.ascii	"char\000"
 .LASF11:
 	.ascii	"xen/asm-offsets.c\000"
-.LASF12:
-	.ascii	"/home/lee/imx21_2.6.21.1/xen-unstable.hg/xen/arch/a"
-	.ascii	"rm\000"
 .LASF5:
 	.ascii	"long long int\000"
 .LASF9:
@@ -419,4 +416,7 @@ main:
 	.ascii	"short unsigned int\000"
 .LASF13:
 	.ascii	"main\000"
+.LASF12:
+	.ascii	"/home/andy/EmbeddedXen/xen-arm/xen-unstable.hg/xen/"
+	.ascii	"arch/arm\000"
 	.ident	"GCC: (GNU) 3.4.4"
