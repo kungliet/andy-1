@@ -1,0 +1,6 @@
+config PLATFORM_GOLDFISH
+    bool "Android emulator board(Goldfish)"
+    select MACHINE_GOLDFISH
+    help
+        Say Y here if you are using the Android emulator board called goldfish.
+

@@ -1,0 +1,160 @@
+
+#ifndef __ARM_DOMAIN_H__
+#define __ARM_DOMAIN_H__
+
+#include <asm/mm.h>
+#include <asm/page.h>
+#include <asm/current.h>
+#include <xen/cpumask.h>
+#include <xen/cache.h>
+#include <xen/spinlock.h>
+#include <public/arch-arm.h>
+
+#define MAPHASH_ENTRIES 8
+#define MAPHASH_HASHFN(pfn) ((pfn) & (MAPHASH_ENTRIES-1))
+#define MAPHASHENT_NOTINUSE ((u16)~0U)
+
+struct trap_bounce {
+	unsigned long error_code;
+	unsigned long flags; /* TBF_ */
+	unsigned long pc;
+};
+
+struct vcpu_maphash {
+    struct vcpu_maphash_entry {
+        unsigned long pfn;
+        uint16_t      idx;
+        uint16_t      refcnt;
+    } hash[MAPHASH_ENTRIES];
+}__cacheline_aligned;
+
+
+#define MAPCACHE_ORDER   10
+#define MAPCACHE_ENTRIES (1 << MAPCACHE_ORDER)
+
+struct mapcache {
+    /* The PTEs that provide the mappings, and a cursor into the array. */
+    pte_t *l1tab;
+    unsigned int cursor;
+
+    /* Protects map_domain_page(). */
+    spinlock_t lock;
+
+    /* Garbage mappings are flushed from TLBs in batches called 'epochs'. */
+    unsigned int epoch, shadow_epoch[MAX_VIRT_CPUS];
+    u32 tlbflush_timestamp;
+
+    /* Which mappings are in use, and which are garbage to reap next epoch? */
+    unsigned long inuse[BITS_TO_LONGS(MAPCACHE_ENTRIES)];
+    unsigned long garbage[BITS_TO_LONGS(MAPCACHE_ENTRIES)];
+
+    /* Lock-free per-VCPU hash of recently-used mappings. */
+    struct vcpu_maphash vcpu_maphash[MAX_VIRT_CPUS];
+}__cacheline_aligned;
+
+
+extern void mapcache_init(struct domain *);
+
+/* x86/64: toggle guest between kernel and user modes. */
+extern void toggle_guest_mode(struct vcpu *);
+
+/*
+ * Initialise a hypercall-transfer page. The given pointer must be mapped
+ * in Xen virtual address space (accesses are not validated or checked).
+ */
+extern void hypercall_page_initialise(void *);
+
+
+struct arch_domain
+{
+    pte_t *mm_perdomain_pt;
+
+    /* map_domain_page() mapping cache. */
+    struct mapcache mapcache;
+
+    /* Writable pagetables. */
+    struct ptwr_info ptwr[2];
+
+    /* I/O-port admin-specified access capabilities. */
+    struct rangeset *ioport_caps;
+
+    /* Shadow mode status and controls. */
+    struct shadow_ops *ops;
+    unsigned int shadow_mode;  /* flags to control shadow table operation */
+    unsigned int shadow_nest;  /* Recursive depth of shadow_lock() nesting */
+
+    /* shadow hashtable */
+    struct shadow_status *shadow_ht;
+    struct shadow_status *shadow_ht_free;
+    struct shadow_status *shadow_ht_extras; /* extra allocation units */
+    unsigned int shadow_extras_count;
+
+    /* shadow dirty bitmap */
+    unsigned long *shadow_dirty_bitmap;
+    unsigned int shadow_dirty_bitmap_size;  /* in pages, bit per page */
+
+    /* shadow mode stats */
+    unsigned int shadow_page_count;
+    unsigned int hl2_page_count;
+    unsigned int snapshot_page_count;
+
+    unsigned int shadow_fault_count;
+    unsigned int shadow_dirty_count;
+
+    /* full shadow mode */
+    //struct out_of_sync_entry *out_of_sync; /* list of out-of-sync pages */
+    //struct out_of_sync_entry *out_of_sync_free;
+    //struct out_of_sync_entry *out_of_sync_extras;
+    //unsigned int out_of_sync_extras_count;
+
+    struct list_head free_shadow_frames;
+
+    pagetable_t         phys_table;         /* guest 1:1 pagetable */
+    //struct vmx_platform vmx_platform;
+
+    /* Shadow-translated guest: Pseudophys base address of reserved area. */
+    unsigned long first_reserved_pfn;
+} __cacheline_aligned;
+
+
+struct arch_vcpu
+{
+    struct vcpu_guest_context guest_context;
+
+    unsigned long      flags;
+
+    void (*schedule_tail) (struct vcpu *);
+
+    /* I/O-port access bitmap. */
+    u8 *iobmp;        /* Guest kernel virtual address of the bitmap. */
+    int iobmp_limit;  /* Number of ports represented in the bitmap.  */
+    int iopl;         /* Current IOPL for this VCPU. */
+
+    intpte_t *perdomain_ptes;
+
+    pagetable_t  guest_table_user;      /* x86/64: user-space pagetable. */
+    pagetable_t  guest_table;           /* (MA) guest notion of cr3 */
+    pagetable_t  shadow_table;          /* (MA) shadow of guest */
+    pagetable_t  monitor_table;         /* (MA) used in hypervisor */
+
+    intpde_t  *guest_vtable;         /* virtual address of pagetable */
+    intpde_t  *shadow_vtable;        /* virtual address of shadow_table */
+    intpde_t  *monitor_vtable;		/* virtual address of monitor_table */
+    intpte_t *hl2_vtable;			/* virtual address of hl2_table */
+
+    unsigned long monitor_shadow_ref;
+
+    /* Current LDT details. */
+    unsigned long shadow_ldt_mapcnt;
+
+    /* xen-arm extention */
+    unsigned long	guest_pstart;		/* guest OS physical start address */
+    unsigned long	guest_vstart;		/* guest OS virtual start address */
+
+} __cacheline_aligned;
+
+
+void startup_cpu_idle_loop(void);
+
+#endif 
+

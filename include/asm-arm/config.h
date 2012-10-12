@@ -1,0 +1,147 @@
+#ifndef _ARM_CONFIG_H_
+#define _ARM_CONFIG_H_
+
+#include <xen/linkage.h>
+#include <xen/errno.h>
+#include <asm/arch/config.h>
+
+#define supervisor_mode_kernel	(0)
+
+#define ARCH_HAS_IRQ_CONTROL	1
+
+#define VM_HYPERVISOR_BASE	0xFF000000
+
+#ifndef STACK_ORDER               
+#define STACK_ORDER 0
+#endif
+
+#define STACK_SIZE  (PAGE_SIZE << STACK_ORDER)	// 16KB
+#define FORCE_CRASH()	while(1);
+#ifndef NDEBUG
+#define MEMORY_GUARD
+#endif
+
+
+// TODO: replace module size with run-time info
+#define XEN_MODULES_LENGTH	0x00200000	/* 2MB */
+#define DOM0_MODULES_LENGTH	0x00200000	/* 2MB */
+#define DOM1_MODULES_LENGTH	0x00200000	/* 2MB */
+
+#define EXCEPTION_VEC_PADDR	PHYS_OFFSET
+
+#define CONFIG_TIME_PROFILING_SUPPORT
+
+#undef CONFIG_SMP
+#define NR_CPUS 1
+#define CONFIG_NR_CPUS 1
+
+#define COMMAND_LINE_SIZE       512     // used by xensetup.c
+
+#define OPT_CONSOLE_STR "com1"
+
+/* Hypervisor owns top 64MB of virtual address space. */
+//#define HYPERVISOR_VIRT_START   0xFC000000
+
+#ifdef CONFIG_ARCH_IMX21
+#define IDENTITY_MAP_MBYTES		64
+#elif CONFIG_ARCH_GOLDFISH
+#define IDENTITY_MAP_MBYTES		96
+#else
+#define IDENTITY_MAP_MBYTES		32
+#endif
+
+#define IOREMAP_MBYTES           4
+#define DIRECTMAP_MBYTES         12
+#define MAPCACHE_MBYTES          4
+#define PERDOMAIN_MBYTES         8
+#define LINEARPT_MBYTES         4
+#define MACHPHYS_MBYTES         4
+#define FRAMETABLE_MBYTES      24
+
+
+#define IOREMAP_VIRT_END		0UL
+#define IOREMAP_VIRT_START		(IOREMAP_VIRT_END - (IOREMAP_MBYTES<<20))
+#define DIRECTMAP_VIRT_END		IOREMAP_VIRT_START
+#define DIRECTMAP_VIRT_START	(DIRECTMAP_VIRT_END - (DIRECTMAP_MBYTES<<20))
+#define MAPCACHE_VIRT_END		DIRECTMAP_VIRT_START
+#define MAPCACHE_VIRT_START		(MAPCACHE_VIRT_END - (MAPCACHE_MBYTES<<20))
+#define PERDOMAIN_VIRT_END		DIRECTMAP_VIRT_START
+#define PERDOMAIN_VIRT_START	(PERDOMAIN_VIRT_END - (PERDOMAIN_MBYTES<<20))
+#define SH_LINEAR_PT_VIRT_END	PERDOMAIN_VIRT_START
+#define SH_LINEAR_PT_VIRT_START	(SH_LINEAR_PT_VIRT_END - (LINEARPT_MBYTES<<20))
+#define LINEAR_PT_VIRT_END		SH_LINEAR_PT_VIRT_START
+#define LINEAR_PT_VIRT_START	(LINEAR_PT_VIRT_END - (LINEARPT_MBYTES<<20))
+#define RDWR_MPT_VIRT_END		LINEAR_PT_VIRT_START
+#define RDWR_MPT_VIRT_START		(RDWR_MPT_VIRT_END - (MACHPHYS_MBYTES<<20))
+#define FRAMETABLE_VIRT_END		RDWR_MPT_VIRT_START
+#define FRAMETABLE_VIRT_START	(FRAMETABLE_VIRT_END - (FRAMETABLE_MBYTES<<20))
+#define RO_MPT_VIRT_END			FRAMETABLE_VIRT_START
+#define RO_MPT_VIRT_START		(RO_MPT_VIRT_END - (MACHPHYS_MBYTES<<20))
+
+//#define XENHEAP_DEFAULT_MB		(DIRECTMAP_MBYTES)
+//#define DIRECTMAP_PHYS_END		(DIRECTMAP_MBYTES<<20)
+
+#define IOREMAP_0MB_VIRT_START	(IOREMAP_VIRT_START)
+#define IOREMAP_1MB_VIRT_START	(IOREMAP_VIRT_START + 0x100000)
+#define IOREMAP_2MB_VIRT_START	(IOREMAP_VIRT_START + 0x200000)
+#define IOREMAP_3MB_VIRT_START	(IOREMAP_VIRT_START + 0x300000)
+
+#define EXCEPTION_VEC_VIRT_START		0x00000000
+
+#define NOR_FLASH_VIRT_START			0x20000000
+#define NOR_FLASH_VIRT_END				(NOR_FLASH_VIRT_START + MEMMAP_NOR_SIZE)
+#define NOR_FLASH_XEN_IMAGE_VIRT_END	(NOR_FLASH_VIRT_END)
+#define NOR_FLASH_XEN_IMAGE_VIRT_START	(NOR_FLASH_VIRT_END - XEN_MODULES_LENGTH)
+#define NOR_FLASH_DOM0_IMAGE_VIRT_END	(NOR_FLASH_XEN_IMAGE_VIRT_START)
+#define NOR_FLASH_DOM0_IMAGE_VIRT_START	(NOR_FLASH_DOM0_IMAGE_VIRT_END - DOM0_MODULES_LENGTH)
+#define NOR_FLASH_DOM1_IMAGE_VIRT_END	(NOR_FLASH_DOM0_IMAGE_VIRT_START)
+#define NOR_FLASH_DOM1_IMAGE_VIRT_START	(NOR_FLASH_DOM1_IMAGE_VIRT_END - DOM1_MODULES_LENGTH)
+
+
+// *** x86-specific (should be changed)
+#define MAX_DMADOM_PFN 0x7FFFFUL /* 31 addressable bits */
+
+
+/* Hypervisor owns top 64MB of virtual address space. */
+// -- also defined in public/arch-arm.h 
+// [TODO] xen-asm/config.h should not be included by guest OS
+#ifndef HYPERVISOR_VIRT_START
+#define HYPERVISOR_VIRT_START   mk_unsigned_long(0xFC000000)
+#endif
+
+#define L2_PAGETABLE_FIRST_XEN_SLOT \
+    (HYPERVISOR_VIRT_START >> L2_PAGETABLE_SHIFT)
+#define L2_PAGETABLE_LAST_XEN_SLOT  \
+    (~0UL >> L2_PAGETABLE_SHIFT)
+#define L2_PAGETABLE_XEN_SLOTS \
+    (L2_PAGETABLE_LAST_XEN_SLOT - L2_PAGETABLE_FIRST_XEN_SLOT + 1)
+
+
+
+#define PGT_base_page_table PGT_l2_page_table
+
+
+
+#ifndef __ASSEMBLY__
+extern unsigned long _end; /* standard ELF symbol */
+extern unsigned long xenheap_phys_end; /* user-configurable */
+
+extern void not_yet(void);      // for just debugging
+#endif
+
+
+/* The first per-domain-mapping sub-area. */
+#define PERDOMAIN_MAPPING_MBYTES	4
+
+#define PDPT_L1_ENTRIES       \
+    ((PERDOMAIN_VIRT_END - PERDOMAIN_VIRT_START) >> PAGE_SHIFT)
+#define PDPT_L2_ENTRIES       \
+    ((PDPT_L1_ENTRIES + (1 << L1_PAGETABLE_ORDER) - 1) >> L1_PAGETABLE_ORDER)
+
+
+#define ELFSIZE	32
+
+#endif  
+
+
+

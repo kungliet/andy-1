@@ -1,0 +1,24 @@
+mainmenu "Xen-on-ARM configuration"
+
+menu "Target Architecture"
+choice
+	prompt "Select target architecture"
+
+config ARCH_X86
+	bool "Support of x86 architecture"
+
+config ARCH_ARM
+	bool "Support of ARM architecture"
+endchoice
+
+endmenu
+
+source "arch/arm/Kconfig"
+
+menu "General Setup"
+config OPTIMIZE_FOR_SIZE
+	bool "Optimize for size"
+
+endmenu
+
+source "common/Kconfig"

@@ -1,0 +1,5 @@
+config PLATFORM_VERSATILEPB
+	bool "ARM versatile_pb"
+	select MACHINE_VERSATILE 
+	help
+		Say Y here if you are using the ARM versatile PB 

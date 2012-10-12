@@ -1,0 +1,41 @@
+#ifndef __ASM_ARM_PTRACE_H
+#define __ASM_ARM_PTRACE_H
+
+#include <xen/config.h>
+
+/*
+ * PSR bits
+ */
+#define PSR_MODE_USR26	0x00000000
+#define PSR_MODE_FIQ26	0x00000001
+#define PSR_MODE_IRQ26	0x00000002
+#define PSR_MODE_SVC26	0x00000003
+#define PSR_MODE_USR	0x00000010
+#define PSR_MODE_FIQ	0x00000011
+#define PSR_MODE_IRQ	0x00000012
+#define PSR_MODE_SVC	0x00000013
+#define PSR_MODE_ABT	0x00000017
+#define PSR_MODE_UND	0x0000001b
+#define PSR_MODE_SYSTEM	0x0000001f
+#define PSR_MODE_MASK	0x0000001f
+#define PSR_STATUS_T	0x00000020
+#define PSR_STATUS_F	0x00000040
+#define PSR_STATUS_I	0x00000080
+#define PSR_STATUS_J	0x01000000
+#define PSR_STATUS_Q	0x08000000
+#define PSR_STATUS_V	0x10000000
+#define PSR_STATUS_C	0x20000000
+#define PSR_STATUS_Z	0x40000000
+#define PSR_STATUS_N	0x80000000
+#define PCMASK		0
+
+/*
+ * Groups of PSR bits
+ */
+#define PSR_MASK_FLAGS		0xff000000	/* Flags		*/
+#define PSR_MASK_STATUS		0x00ff0000	/* Status		*/
+#define PSR_MASK_EXTENSION	0x0000ff00	/* Extension		*/
+#define PSR_MASK_CONTROL	0x000000ff	/* Control		*/
+
+#endif
+

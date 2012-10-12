@@ -1,0 +1,25 @@
+--- sched_sedf.c	2008-05-24 18:34:48.000000000 +0900
++++ /home/nirvana/workspace/xen-3.0.2-2/xen/common/sched_sedf.c	2006-04-14 02:48:41.000000000 +0900
+@@ -1062,6 +1062,22 @@
+ #endif
+ 
+ 
++#if 0
++static void unblock_long_cons_a (struct sedf_vcpu_info* inf, s_time_t now)
++{
++    /*treat the time the domain was blocked in the
++     CURRENT period as consumed by the domain*/
++    inf->cputime = (now - inf->deadl_abs) % inf->period; 
++    if ( (inf->cputime + EXTRA_QUANTUM) > inf->slice )
++    {
++        /*we don't have a reasonable amount of time in our slice
++          left :( => start in next period!*/
++        unblock_long_vcons(inf, now);
++    }
++}
++#endif
++
++
+ static void unblock_long_cons_b(struct sedf_vcpu_info* inf,s_time_t now)
+ {
+     /*Conservative 2b*/
